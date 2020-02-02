@@ -1,5 +1,9 @@
 let express = require("express");
+let cors = require("cors");
 let app = express();
+
+
+app.use(cors())
 
 app.get("/", function (request, response) {
 	response.send("Hello, Node.js!");

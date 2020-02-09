@@ -1,17 +1,18 @@
-let express = require("express");
-let cors = require("cors");
-let app = express();
+let wss = require("ws").Server;
 
+let server = new wss({port: 591});
+let clients = new Set();
 
-app.use(cors())
+server.on("connection", function (socket) {
+	clients.add(socket);
 
-app.get("/", function (request, response) {
-	response.send("Hello, Node.js!");
-})
+	socket.on("message", function(message){
+		for(let client of clients){
+			client.send(message);
+		}
+	});
 
-app.get("/page", function(req, res){
-	let x = req.query.foo;
-	res.send({foo: 2 * x});
-})
-
-app.listen(591);
+	socket.on("close", function(){
+		clients.delete(socket);
+	});
+});
